@@ -1,33 +1,37 @@
-"use client"
+"use client";
 
 import { syncUser } from "@/lib/syncUser";
 import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { useEffect } from "react";
 
+import { toast } from "sonner";
+
 export default function Home() {
-  const { isSignedIn, user, isLoaded } = useUser()
+  const { isSignedIn, user, isLoaded } = useUser();
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
-      redirect("/sign-in")
+      redirect("/sign-in");
+    } else if (isLoaded && isSignedIn) {
+      toast("Logged in successfully.");
+      redirect("/users");
     }
-  }, [isLoaded, isSignedIn])
+  }, [isLoaded, isSignedIn]);
 
   useEffect(() => {
     if (user) {
       const checkUser = async () => {
         try {
-          const request = await syncUser()
-          console.log(request)
+          await syncUser();
         } catch (error) {
-          console.log(error)
+          console.log(error);
         }
-      }
+      };
 
-      checkUser()
+      checkUser();
     }
-  }, [user])
+  }, [user]);
 
   if (!isLoaded) {
     return <div>Loading...</div>;
