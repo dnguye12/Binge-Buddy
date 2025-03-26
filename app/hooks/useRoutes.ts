@@ -2,7 +2,7 @@ import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
 import useConversation from "./useConversation";
-import { MessageCircleMore, UsersRound } from "lucide-react";
+import { MessageCircleMore } from "lucide-react";
 
 const useRoutes = () => {
   const pathname = usePathname();
@@ -12,16 +12,10 @@ const useRoutes = () => {
     () => [
       {
         label: "Chat",
-        href: "/conversations",
+        href: "/chat",
         icon: MessageCircleMore,
-        active: pathname === "/conversations" || !!conversationId,
-      },
-      {
-        label: "Users",
-        href: "/users",
-        icon: UsersRound,
-        active: pathname === "/users",
-      },
+        active: pathname === "/chat" || !!conversationId,
+      }
     ],
     [pathname, conversationId],
   );

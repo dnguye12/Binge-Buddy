@@ -5,6 +5,8 @@ import { NextResponse } from "next/server";
 export async function POST() {
   const user = await currentUser();
 
+  console.log("womp")
+
   if (!user) {
     return NextResponse.json({ error: "User not found" }, { status: 401 });
   }
@@ -19,6 +21,9 @@ export async function POST() {
     const newUser = await db.user.create({
       data: {
         clerkId: user.id,
+        name: user.username || user.fullName || "",
+        email: user.emailAddresses[0].emailAddress,
+        image: user.imageUrl
       },
     });
 

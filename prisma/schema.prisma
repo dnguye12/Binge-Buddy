@@ -16,6 +16,9 @@ datasource db {
 model User {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
   clerkId String @unique
+  name    String
+  email   String
+  image   String
 
   conversationIds String[]       @db.ObjectId
   conversations   Conversation[] @relation(fields: [conversationIds], references: [id])
@@ -26,6 +29,7 @@ model User {
   messages Message[]
 
   createdAt DateTime @default(now())
+  updateAt  DateTime @updatedAt
 }
 
 model Conversation {
