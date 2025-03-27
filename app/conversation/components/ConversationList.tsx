@@ -1,7 +1,5 @@
 "use client"
 
-import { Conversation } from "@prisma/client";
-
 import ConversationBox from "./ConversationBox";
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react";
@@ -12,14 +10,18 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import { useModal } from "@/app/hooks/useModalStore";
+import { FullConversationType } from "@/app/types";
+import useConversation from "@/app/hooks/useConversation";
 
 
 interface ConversationListProps {
-    conversations: Conversation[]
+    conversations: FullConversationType[]
 }
 
 const ConversationList = ({ conversations }: ConversationListProps) => {
     const { onOpen } = useModal()
+
+    const { conversationId, isOpen } = useConversation()
 
     return (
         <aside className="fixed inset-y-0 pb-20 lg:pb-0 lg:left-20 lg:w-80 lg:block overflow-y-auto border-r border-gray-200 block w-full left-0">
@@ -47,7 +49,11 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
 
                 </div>
                 {conversations.map((conversation) => (
-                    <ConversationBox key={conversation.id} conversation={conversation} />
+                    <ConversationBox
+                        key={conversation.id}
+                        conversation={conversation}
+                        selected={conversationId === conversation.id}
+                    />
                 ))}
             </div>
         </aside>

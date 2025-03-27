@@ -11,10 +11,10 @@ const useRoutes = () => {
   const routes = useMemo(
     () => [
       {
-        label: "Chat",
-        href: "/chat",
+        label: "Conversations",
+        href: "/conversation",
         icon: MessageCircleMore,
-        active: pathname === "/chat" || !!conversationId,
+        active: pathname === "/conversation" || !!conversationId,
       }
     ],
     [pathname, conversationId],

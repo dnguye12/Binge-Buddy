@@ -49,7 +49,7 @@ export const CreateGroupModal = () => {
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         try {
-            await axios.post("/api/chat", values)
+            await axios.post("/api/conversation", values)
             form.reset()
             router.refresh()
             onClose()

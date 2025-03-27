@@ -15,6 +15,15 @@ const getCurrentUserConversations = async () => {
                         clerkId: user?.id
                     }
                 }
+            },
+            include: {
+                users: true,
+                messages: {
+                    include: {
+                        sender: true,
+                        seen: true
+                    }
+                }
             }
         })
 

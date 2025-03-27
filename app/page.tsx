@@ -16,7 +16,7 @@ export default function Home() {
       redirect("/sign-in");
     } else if (isLoaded && isSignedIn && checkedUser) {
       toast("Logged in successfully.");
-      redirect("/chat");
+      redirect("/conversation");
     }
   }, [isLoaded, isSignedIn, checkedUser]);
 

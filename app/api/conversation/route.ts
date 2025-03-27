@@ -11,7 +11,7 @@ export async function POST(request: Request) {
             return new NextResponse("Unauthorized", { status: 401 })
         }
 
-        if(!body.name) {
+        if (!body.name) {
             return new NextResponse("Invalid data", { status: 400 })
         }
 
@@ -30,6 +30,7 @@ export async function POST(request: Request) {
                 users: true
             }
         })
+        
         return NextResponse.json(newConversation)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
