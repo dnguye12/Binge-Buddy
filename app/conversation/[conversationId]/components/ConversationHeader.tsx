@@ -64,7 +64,7 @@ const ConversationHeader = ({ conversation }: ConversationHeaderProps) => {
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => onOpen("invite", {conversation})} className="px-3 py-2 text-sm cursor-pointer">Invite People <UserPlus className="h-4 w-4 ml-auto" /></DropdownMenuItem>
           <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer">See Members <Users className="w-4 h-4 ml-auto" /></DropdownMenuItem>
-          <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer text-rose-500">Leave Chat <LogOut className="h-4 w-4 ml-auto text-rose-500" /></DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onOpen("leaveGroup", {conversation})}className="px-3 py-2 text-sm cursor-pointer text-rose-500">Leave Chat <LogOut className="h-4 w-4 ml-auto text-rose-500" /></DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 

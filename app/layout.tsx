@@ -3,7 +3,6 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-import { Toaster } from "@/components/ui/sonner";
 import { ModalProvider } from "@/components/providers/modalProvider";
 
 const geistSans = Geist({
@@ -34,7 +33,6 @@ export default function RootLayout({
         >
           <ModalProvider />
           {children}
-          <Toaster />
         </body>
       </html>
     </ClerkProvider>

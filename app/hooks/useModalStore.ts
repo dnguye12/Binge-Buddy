@@ -1,7 +1,7 @@
 import { Conversation } from "@prisma/client";
 import { create } from "zustand";
 
-export type ModalType = "createGroup" | "invite";
+export type ModalType = "createGroup" | "invite" | "leaveGroup";
 
 interface ModalData {
   conversation?: Conversation;

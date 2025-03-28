@@ -5,8 +5,6 @@ import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { toast } from "sonner";
-
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
   const [checkedUser, setCheckedUser] = useState(false);
@@ -15,7 +13,6 @@ export default function Home() {
     if (isLoaded && !isSignedIn) {
       redirect("/sign-in");
     } else if (isLoaded && isSignedIn && checkedUser) {
-      toast("Logged in successfully.");
       redirect("/conversation");
     }
   }, [isLoaded, isSignedIn, checkedUser]);
