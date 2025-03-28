@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { CreateGroupModal } from "../modals/createGroupModal";
 import InviteModal from "../modals/inviteModal";
 import { LeaveGroupModal } from "../modals/leaveGroupModal";
+import { MembersModal } from "../modals/membersModal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -21,6 +22,7 @@ export const ModalProvider = () => {
       <CreateGroupModal />
       <InviteModal />
       <LeaveGroupModal />
+      <MembersModal />
     </>
   );
 };

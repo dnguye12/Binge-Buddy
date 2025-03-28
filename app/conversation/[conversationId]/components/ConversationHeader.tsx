@@ -1,6 +1,5 @@
 "use client"
 
-import { Conversation, User } from "@prisma/client";
 import { ChevronLeft, EllipsisIcon, LogOut, UserPlus, Users } from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
@@ -16,12 +15,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { useModal } from "@/app/hooks/useModalStore";
+import { FullConversationType } from "@/app/types";
 
 
 interface ConversationHeaderProps {
-  conversation: Conversation & {
-    users: User[];
-  };
+  conversation: FullConversationType
 }
 
 const ConversationHeader = ({ conversation }: ConversationHeaderProps) => {
@@ -63,7 +61,7 @@ const ConversationHeader = ({ conversation }: ConversationHeaderProps) => {
           <DropdownMenuLabel className="px-3 py-2">Conversation Options</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => onOpen("invite", {conversation})} className="px-3 py-2 text-sm cursor-pointer">Invite People <UserPlus className="h-4 w-4 ml-auto" /></DropdownMenuItem>
-          <DropdownMenuItem className="px-3 py-2 text-sm cursor-pointer">See Members <Users className="w-4 h-4 ml-auto" /></DropdownMenuItem>
+          <DropdownMenuItem onClick={() => onOpen("members", {conversation})} className="px-3 py-2 text-sm cursor-pointer">Members List <Users className="w-4 h-4 ml-auto" /></DropdownMenuItem>
           <DropdownMenuItem onClick={() => onOpen("leaveGroup", {conversation})}className="px-3 py-2 text-sm cursor-pointer text-rose-500">Leave Chat <LogOut className="h-4 w-4 ml-auto text-rose-500" /></DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

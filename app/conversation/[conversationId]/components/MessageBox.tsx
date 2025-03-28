@@ -38,6 +38,8 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
         data.image ? "rounded-md p-0 bg-transparent drop-shadow-md" : "rounded-full py-2 px-3"
     )
 
+    console.log({isLast, isOwn, seenList})
+
     return (
         <div className={container}>
             <div className={avatar}>
@@ -72,6 +74,11 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                         )
                     }
                 </div>
+                {isLast && isOwn && seenList.length > 0 && (
+                    <div className="text-xs font-light text-gray-500">
+                        {`Seen by ${seenList}`}
+                    </div>
+                )}
             </div>
         </div>
     );

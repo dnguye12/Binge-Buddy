@@ -1,10 +1,10 @@
-import { Conversation } from "@prisma/client";
 import { create } from "zustand";
+import { FullConversationType } from "../types";
 
-export type ModalType = "createGroup" | "invite" | "leaveGroup";
+export type ModalType = "createGroup" | "invite" | "leaveGroup" | "members";
 
 interface ModalData {
-  conversation?: Conversation;
+  conversation?: FullConversationType;
 }
 interface ModalStore {
   type: ModalType | null;
