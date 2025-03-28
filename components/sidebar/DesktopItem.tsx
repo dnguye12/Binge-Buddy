@@ -27,7 +27,7 @@ const DesktopItem = ({
       <Link
         href={href}
         className={cn(
-          "group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold text-gray-500 hover:bg-gray-100 hover:text-black transition-all",
+          "group flex gap-x-3 rounded-md p-3 text-sm leading-6 font-semibold text-gray-500 transition-all hover:bg-gray-100 hover:text-black",
           active && "bg-gray-100 text-black",
         )}
       >

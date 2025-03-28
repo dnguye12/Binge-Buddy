@@ -15,7 +15,7 @@ const useRoutes = () => {
         href: "/conversation",
         icon: MessageCircleMore,
         active: pathname === "/conversation" || !!conversationId,
-      }
+      },
     ],
     [pathname, conversationId],
   );

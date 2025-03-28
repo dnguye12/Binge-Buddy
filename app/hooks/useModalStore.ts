@@ -1,17 +1,23 @@
-import { create } from "zustand"
+import { Conversation } from "@prisma/client";
+import { create } from "zustand";
 
-export type ModalType = "createGroup"
+export type ModalType = "createGroup" | "invite";
 
+interface ModalData {
+  conversation?: Conversation;
+}
 interface ModalStore {
-    type: ModalType | null;
-    isOpen: boolean;
-    onOpen: (type: ModalType) => void;
-    onClose: () => void;
+  type: ModalType | null;
+  data: ModalData;
+  isOpen: boolean;
+  onOpen: (type: ModalType, data?: ModalData) => void;
+  onClose: () => void;
 }
 
 export const useModal = create<ModalStore>((set) => ({
-    type: null,
-    isOpen: false,
-    onOpen: (type) => set({ isOpen: true, type }),
-    onClose: () => set({ type: null, isOpen: false })
-}))
+  type: null,
+  data: {},
+  isOpen: false,
+  onOpen: (type, data = {}) => set({ isOpen: true, type, data }),
+  onClose: () => set({ type: null, isOpen: false })
+}));

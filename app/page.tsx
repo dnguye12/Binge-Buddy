@@ -9,7 +9,7 @@ import { toast } from "sonner";
 
 export default function Home() {
   const { isSignedIn, user, isLoaded } = useUser();
-  const [checkedUser, setCheckedUser] = useState(false)
+  const [checkedUser, setCheckedUser] = useState(false);
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) {
@@ -25,10 +25,10 @@ export default function Home() {
       const checkUser = async () => {
         try {
           await syncUser();
-          setCheckedUser(true)
+          setCheckedUser(true);
         } catch (error) {
           console.log(error);
-          setCheckedUser(true)
+          setCheckedUser(true);
         }
       };
 
@@ -44,5 +44,5 @@ export default function Home() {
     return null;
   }
 
-  return <div className="p-4 pt-2 text-red-500">{user.fullName}</div>;
+  return <div>Loading...</div>;
 }
