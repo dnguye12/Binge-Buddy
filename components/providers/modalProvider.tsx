@@ -5,6 +5,7 @@ import { CreateGroupModal } from "../modals/createGroupModal";
 import InviteModal from "../modals/inviteModal";
 import { LeaveGroupModal } from "../modals/leaveGroupModal";
 import { MembersModal } from "../modals/membersModal";
+import ImageModal from "../modals/imageModal";
 
 export const ModalProvider = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -23,6 +24,7 @@ export const ModalProvider = () => {
       <InviteModal />
       <LeaveGroupModal />
       <MembersModal />
+      <ImageModal />
     </>
   );
 };

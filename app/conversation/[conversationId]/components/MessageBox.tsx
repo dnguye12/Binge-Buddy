@@ -5,6 +5,7 @@ import { useUser } from "@clerk/nextjs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { format } from "date-fns";
 import Image from "next/image";
+import { useModal } from "@/app/hooks/useModalStore";
 
 interface MessageBoxProps {
     isLast: boolean,
@@ -12,6 +13,7 @@ interface MessageBoxProps {
 }
 const MessageBox = ({ isLast, data }: MessageBoxProps) => {
     const { user } = useUser()
+    const { onOpen } = useModal()
 
     const isOwn = user?.id === data.sender.clerkId
 
@@ -37,8 +39,6 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
         isOwn ? "bg-black text-white" : "bg-gray-100",
         data.image ? "rounded-md p-0 bg-transparent drop-shadow-md" : "rounded-full py-2 px-3"
     )
-
-    console.log({isLast, isOwn, seenList})
 
     return (
         <div className={container}>
@@ -66,6 +66,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
                                 width={144}
                                 src={data.image}
                                 className="object-hover cursor-pointer hover:scale-110 transition translate"
+                                onClick={() => onOpen("image", { image: data.image || undefined })}
                             />
                         )
                         :
