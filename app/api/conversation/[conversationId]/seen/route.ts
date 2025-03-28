@@ -1,8 +1,9 @@
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server"
 
-export async function POST(request: Request, { params }: { params: Promise<{conversationId: string}> }) {
+export async function POST(request: Request, { params }: { params: Promise<{ conversationId: string }> }) {
     try {
         const user = await currentUser()
         const { conversationId } = await params
@@ -51,6 +52,17 @@ export async function POST(request: Request, { params }: { params: Promise<{conv
                 }
             }
         })
+
+        await pusherServer.trigger(user.id, "conversation:update", {
+            id: conversationId,
+            messages: [updatedMessage]
+        })
+
+        if (lastMessage.seenIds.indexOf(user.id) !== -1) {
+            return NextResponse.json(conversation)
+        }
+
+        await pusherServer.trigger(conversationId!, "messages:update", updatedMessage)
 
         return NextResponse.json(updatedMessage)
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
