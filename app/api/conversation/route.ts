@@ -1,4 +1,5 @@
 import { db } from "@/lib/db";
+import { pusherServer } from "@/lib/pusher";
 import { currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid"
@@ -32,6 +33,12 @@ export async function POST(request: Request) {
         users: true,
       },
     });
+
+    newConversation.users.forEach((newConversationUser) => {
+      console.log(newConversationUser.clerkId)
+        pusherServer.trigger(newConversationUser.clerkId, "conversation:new", newConversation)
+      
+    })
 
     return NextResponse.json(newConversation);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

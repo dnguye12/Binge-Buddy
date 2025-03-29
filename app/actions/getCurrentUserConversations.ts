@@ -1,9 +1,8 @@
+import { currentUser } from "@/lib/currentUser";
 import { db } from "@/lib/db";
-import { currentUser } from "@clerk/nextjs/server";
 
 const getCurrentUserConversations = async () => {
   const user = await currentUser();
-
   try {
     const conversations = await db.conversation.findMany({
       orderBy: {
@@ -12,7 +11,7 @@ const getCurrentUserConversations = async () => {
       where: {
         users: {
           some: {
-            clerkId: user?.id,
+            clerkId: user?.clerkId,
           },
         },
       },

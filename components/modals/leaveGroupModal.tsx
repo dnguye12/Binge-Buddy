@@ -30,8 +30,7 @@ export const LeaveGroupModal = () => {
             await axios.patch(`/api/conversation/${conversation?.id}/leave`)
 
             onClose()
-            router.refresh()
-            router.push("/")
+            router.push("/conversation")
         } catch (error) {
             console.log(error)
         } finally {

@@ -13,6 +13,10 @@ import { useModal } from "@/app/hooks/useModalStore";
 import { FullConversationType } from "@/app/types";
 import useConversation from "@/app/hooks/useConversation";
 import { cn } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { pusherClient } from "@/lib/pusher";
+import { find } from "lodash";
 
 interface ConversationListProps {
   conversations: FullConversationType[];
@@ -20,8 +24,60 @@ interface ConversationListProps {
 
 const ConversationList = ({ conversations }: ConversationListProps) => {
   const { onOpen } = useModal();
+  const { isLoaded, user } = useUser()
+  const [items, setItems] = useState(conversations)
 
   const { conversationId, isOpen } = useConversation();
+
+  useEffect(() => {
+    if (!isLoaded || !user) {
+      return
+    }
+
+    const pusherKey = user?.id
+
+    pusherClient.subscribe(pusherKey)
+
+    const newHandler = (conversation: FullConversationType) => {
+      setItems((current) => {
+        if (find(current, { id: conversationId })) {
+          return current
+        }
+
+        return [conversation, ...current]
+      })
+    }
+
+    const updateHandler = (conversation: FullConversationType) => {
+      setItems((current) => current.map((currentConversation) => {
+        if (currentConversation.id === conversation.id) {
+          return {
+            ...currentConversation,
+            messages: conversation.messages
+          }
+        }
+
+        return currentConversation
+      }))
+    }
+
+    const leaveHandler = (conversation: FullConversationType) => {
+      setItems((current) => {
+        return [...current.filter((convo) => convo.id !== conversation.id)]
+      })
+    }
+
+    pusherClient.bind("conversation:new", newHandler)
+    pusherClient.bind("conversation:update", updateHandler)
+    pusherClient.bind("conversation:leave", leaveHandler)
+
+    return () => {
+      pusherClient.unsubscribe(pusherKey)
+      pusherClient.unbind("conversation:new", newHandler)
+      pusherClient.unbind("conversation:update", updateHandler)
+      pusherClient.unbind("conversation:leave", leaveHandler)
+    }
+  }, [conversationId, isLoaded, user])
 
   return (
     <aside
@@ -51,7 +107,7 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
             </Tooltip>
           </TooltipProvider>
         </div>
-        {conversations.map((conversation) => (
+        {items.map((conversation) => (
           <ConversationBox
             key={conversation.id}
             conversation={conversation}
