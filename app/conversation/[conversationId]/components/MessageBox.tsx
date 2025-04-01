@@ -36,7 +36,7 @@ const MessageBox = ({ isLast, data }: MessageBoxProps) => {
 
     const message = cn(
         "text-sm w-fit overflow-hidden",
-        isOwn ? "bg-black text-white" : "bg-gray-100",
+        isOwn ? "bg-primary text-primary-foreground" : "bg-secondary text-secondary-foreground",
         data.image ? "rounded-md p-0 bg-transparent drop-shadow-md" : "rounded-full py-2 px-3"
     )
 

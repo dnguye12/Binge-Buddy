@@ -26,7 +26,11 @@ model User {
   seenMessagesIds String[]  @db.ObjectId
   seenMessages    Message[] @relation("Seen", fields: [seenMessagesIds], references: [id])
 
-  messages Message[]
+  messagesId String[]  @db.ObjectId
+  messages   Message[]
+
+  voteSessionIds String[]      @db.ObjectId
+  voteSessions   VoteSession[]
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
@@ -41,15 +45,20 @@ model Conversation {
   messages      Message[]
   lastMessageAt DateTime  @default(now())
 
-  userIds   String[] @db.ObjectId
-  users     User[]   @relation(fields: [userIds], references: [id])
+  userIds String[] @db.ObjectId
+  users   User[]   @relation(fields: [userIds], references: [id])
+
+  voteSessionIds String[]      @db.ObjectId
+  voteSessions   VoteSession[]
+
   createdAt DateTime @default(now())
 }
 
 model Message {
-  id    String  @id @default(auto()) @map("_id") @db.ObjectId
-  body  String?
-  image String?
+  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  body   String?
+  image  String?
+  isVote Boolean @default(false)
 
   seenIds String[] @db.ObjectId
   seen    User[]   @relation("Seen", fields: [seenIds], references: [id])
@@ -60,5 +69,28 @@ model Message {
   senderId String @db.ObjectId
   sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
+voteSessionId  String?      @db.ObjectId
+  voteSession VoteSession?
+
   createdAt DateTime @default(now())
+}
+
+enum VoteStatus {
+  INITIATED
+  OPTIONS
+  ROUND_ONE
+  ROUND_TWO
+  FINISHED
+}
+
+model VoteSession {
+  id             String       @id @default(auto()) @map("_id") @db.ObjectId
+  messageId      String       @unique @db.ObjectId
+  message        Message      @relation(fields: [messageId], references: [id])
+  conversationId String       @db.ObjectId
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  senderId       String       @db.ObjectId
+  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  status         VoteStatus   @default(INITIATED)
+  createdAt      DateTime     @default(now())
 }
