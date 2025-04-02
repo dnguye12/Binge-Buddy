@@ -9,13 +9,19 @@ const getMessages = async (conversationId: string) => {
       include: {
         sender: true,
         seen: true,
+        voteSession: true
       },
       orderBy: {
         createdAt: "asc",
       },
     });
 
-    return messages;
+    const normalizedMessages = messages.map((msg) => ({
+      ...msg,
+      voteSession: msg.voteSession ?? undefined,
+    }));
+
+    return normalizedMessages;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.log(error);

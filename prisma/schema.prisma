@@ -69,8 +69,8 @@ model Message {
   senderId String @db.ObjectId
   sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
-voteSessionId  String?      @db.ObjectId
-  voteSession VoteSession?
+  voteSessionId String?      @db.ObjectId
+  voteSession   VoteSession?
 
   createdAt DateTime @default(now())
 }
@@ -93,4 +93,7 @@ model VoteSession {
   sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
   status         VoteStatus   @default(INITIATED)
   createdAt      DateTime     @default(now())
+
+  platforms String[]
+  genres    Int[]
 }

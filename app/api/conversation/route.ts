@@ -35,9 +35,8 @@ export async function POST(request: Request) {
     });
 
     newConversation.users.forEach((newConversationUser) => {
-      console.log(newConversationUser.clerkId)
-        pusherServer.trigger(newConversationUser.clerkId, "conversation:new", newConversation)
-      
+      pusherServer.trigger(newConversationUser.clerkId, "conversation:new", newConversation)
+
     })
 
     return NextResponse.json(newConversation);

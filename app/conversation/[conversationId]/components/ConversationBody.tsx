@@ -7,6 +7,7 @@ import MessageBox from "./MessageBox";
 import axios from "axios";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
+import VoteBox from "./VoteBox";
 
 interface ConversationBodyProps {
   initialMessages: FullMessageType[]
@@ -23,7 +24,6 @@ const ConversationBody = ({ initialMessages }: ConversationBodyProps) => {
 
   useEffect(() => {
     pusherClient.subscribe(conversationId)
-    bottomRef?.current?.scrollIntoView()
 
     const messageHandler = (message: FullMessageType) => {
       axios.post(`/api/conversation/${conversationId}/seen`)
@@ -34,8 +34,6 @@ const ConversationBody = ({ initialMessages }: ConversationBodyProps) => {
 
         return [...current, message]
       })
-
-      bottomRef?.current?.scrollIntoView()
     }
 
     const updateMessageHandler = (newMessage: FullMessageType) => {
@@ -58,18 +56,33 @@ const ConversationBody = ({ initialMessages }: ConversationBodyProps) => {
     }
   }, [conversationId])
 
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   return (
-    <div className="flex-1 overflow-y-auto">
+    <div className="flex-1 overflow-y-auto relative">
       {
         messages.map((message, idx) => (
-          <MessageBox
-            key={`message-${conversationId}-${idx}`}
-            isLast={idx === messages.length - 1}
-            data={message}
-          />
+
+          !message.isVote ? (
+            <MessageBox
+              key={`message-${conversationId}-${idx}`}
+              isLast={idx === messages.length - 1}
+              data={message}
+            />
+          )
+            :
+            (
+              <VoteBox
+                key={`message-${conversationId}-${idx}`}
+                isLast={idx === messages.length - 1}
+                data={message}
+              />
+            )
         ))
       }
-      <div ref={bottomRef} className="pt-24" />
+      <div ref={bottomRef} className="pt-px absolute w-full bottom-[-69px] left-0" />
     </div>
   )
 };

@@ -14,9 +14,9 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { ImagePlus, SendHorizonal } from "lucide-react";
+import { SendHorizonal, VoteIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CldUploadButton } from 'next-cloudinary';
+import MyUploadButton from "@/components/MyUploadButton";
 
 const formSchema = z.object({
     message: z.string().min(1, {
@@ -53,15 +53,16 @@ const ConversationForm = () => {
         })
     }
 
+    const handleInitVote = () => {
+        axios.post("/api/message", {
+            isVote: true,
+            conversationId
+        })
+    }
+
     return (
         <div className="flex w-full items-center gap-2 border-t bg-white px-4 py-4 lg:gap-4">
-            <CldUploadButton
-                options={{ maxFiles: 1 }}
-                onSuccess={handleUpload}
-                uploadPreset="binged_buddy"
-            >
-                <ImagePlus className="h-auto w-8" />
-            </CldUploadButton>
+            <MyUploadButton handleUpload={handleUpload} />
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -87,7 +88,10 @@ const ConversationForm = () => {
                             )}
                         />
                     </div>
-                    <Button type="submit" disabled={isLoading} className="shadow-md">
+                    <Button onClick={handleInitVote} type="button" size="icon" variant={"outline"} disabled={isLoading} className="shadow-md cursor-pointer">
+                        <VoteIcon />
+                    </Button>
+                    <Button type="submit" size="icon" disabled={isLoading} className="shadow-md cursor-pointer">
                         <SendHorizonal />
                     </Button>
                 </form>

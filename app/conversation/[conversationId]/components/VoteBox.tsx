@@ -5,13 +5,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { VoteIcon } from "lucide-react";
+import { redirect } from "next/navigation";
 
 interface VoteBoxProps {
     isLast: boolean,
     data: FullMessageType
 }
 const VoteBox = ({ isLast, data }: VoteBoxProps) => {
-    console.log(data)
     const { user } = useUser()
 
     const isOwn = user?.id === data.sender.clerkId
@@ -34,6 +34,10 @@ const VoteBox = ({ isLast, data }: VoteBoxProps) => {
         isOwn ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
     )
 
+    const handleGoToVote = () => {
+        redirect(`/conversation/${data.conversationId}/voteSession/${data.voteSessionId}`)
+    }
+
     return (
         <div className={container}>
             <div className={avatar}>
@@ -51,7 +55,7 @@ const VoteBox = ({ isLast, data }: VoteBoxProps) => {
                         {format(new Date(data.createdAt), 'p')}
                     </div>
                 </div>
-                <button className={message}>
+                <button onClick={handleGoToVote} className={message}>
                     {
                         isOwn
                             ?

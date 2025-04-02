@@ -1,6 +1,7 @@
 import getConversationById from "@/app/actions/getConversationById";
 import getMessages from "@/app/actions/getMessages";
-import EmptyState from "@/components/EmptyState";
+import { redirect } from "next/navigation";
+
 import ConversationHeader from "./components/ConversationHeader";
 import ConversationBody from "./components/ConversationBody";
 import ConversationForm from "./components/ConversationForm";
@@ -17,11 +18,7 @@ const ConversationIdPage = async ({ params }: ConversationIdPageProps) => {
     const messages = await getMessages(conversationId);
 
     if (!conversation) {
-        return (
-            <div className="h-full lg:pl-80">
-                <EmptyState />
-            </div>
-        );
+        redirect("/conversation")
     }
 
     return (
