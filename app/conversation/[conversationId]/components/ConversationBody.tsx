@@ -8,12 +8,14 @@ import axios from "axios";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
 import VoteBox from "./VoteBox";
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface ConversationBodyProps {
-  initialMessages: FullMessageType[]
+  initialMessages: FullMessageType[],
+  isVote: boolean
 }
-const ConversationBody = ({ initialMessages }: ConversationBodyProps) => {
-  const [messages, setMessages] = useState(initialMessages)
+const ConversationBody = ({ initialMessages, isVote }: ConversationBodyProps) => {
+  const [messages, setMessages] = useState<FullMessageType[]>(initialMessages)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const { conversationId } = useConversation()
@@ -61,7 +63,7 @@ const ConversationBody = ({ initialMessages }: ConversationBodyProps) => {
   }, [messages]);
 
   return (
-    <div className="flex-1 overflow-y-auto relative">
+    <ScrollArea className="w-full h-[calc(100vh-73px-69px)]">
       {
         messages.map((message, idx) => (
 
@@ -73,17 +75,17 @@ const ConversationBody = ({ initialMessages }: ConversationBodyProps) => {
             />
           )
             :
-            (
+            (!isVote && (
               <VoteBox
                 key={`message-${conversationId}-${idx}`}
                 isLast={idx === messages.length - 1}
-                data={message}
+                message={message}
               />
-            )
+            ))
         ))
       }
-      <div ref={bottomRef} className="pt-px absolute w-full bottom-[-69px] left-0" />
-    </div>
+      <div ref={bottomRef} className="pt-px w-full" />
+    </ScrollArea>
   )
 };
 

@@ -1,3 +1,5 @@
+"use client"
+
 import { FullMessageType } from "@/app/types";
 import { useUser } from "@clerk/nextjs";
 
@@ -5,18 +7,19 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { VoteIcon } from "lucide-react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface VoteBoxProps {
     isLast: boolean,
-    data: FullMessageType
+    message: FullMessageType
 }
-const VoteBox = ({ isLast, data }: VoteBoxProps) => {
+const VoteBox = ({ isLast, message }: VoteBoxProps) => {
     const { user } = useUser()
+    const router = useRouter()
 
-    const isOwn = user?.id === data.sender.clerkId
-    const seenList = (data.seen || [])
-        .filter((seenUser) => seenUser.clerkId !== data.sender.clerkId)
+    const isOwn = user?.id === message.sender.clerkId
+    const seenList = (message.seen || [])
+        .filter((seenUser) => seenUser.clerkId !== message.sender.clerkId)
         .map((seenUser) => seenUser.name)
         .join(', ')
 
@@ -29,33 +32,36 @@ const VoteBox = ({ isLast, data }: VoteBoxProps) => {
         "flex flex-col gap-2",
         isOwn && "items-end"
     )
-    const message = cn(
+    const messageClass = cn(
         "text-lg shadow-xs transition-all w-fit overflow-hidden p-6 rounded-md cursor-pointer flex items-center gap-2",
         isOwn ? "bg-primary text-primary-foreground hover:bg-primary/90" : "bg-secondary text-secondary-foreground hover:bg-secondary/80"
     )
 
     const handleGoToVote = () => {
-        redirect(`/conversation/${data.conversationId}/voteSession/${data.voteSessionId}`)
+        router.push(`/conversation/${message.conversationId}/voteSession/${message.voteSessionId}`)
     }
 
     return (
         <div className={container}>
             <div className={avatar}>
                 <Avatar>
-                    <AvatarImage src={data.sender.image} />
-                    <AvatarFallback>{data.sender.name}</AvatarFallback>
+                    <AvatarImage src={message.sender.image} />
+                    <AvatarFallback>{message.sender.name}</AvatarFallback>
                 </Avatar>
             </div>
             <div className={body}>
                 <div className="flex items-center gap-1">
                     <div className="text-sm text-gray-500">
-                        {data.sender.name}
+                        {message.sender.name}
                     </div>
                     <div className="text-sm text-gray-400">
-                        {format(new Date(data.createdAt), 'p')}
+                        {format(new Date(message.createdAt), 'p')}
                     </div>
                 </div>
-                <button onClick={handleGoToVote} className={message}>
+                <button 
+                disabled={message.voteSession?.status !== "INITIATED" && message.voteSession?.status !== "ROUND_ONE"} 
+                onClick={() => {handleGoToVote()}} 
+                className={messageClass}>
                     {
                         isOwn
                             ?
@@ -74,7 +80,7 @@ const VoteBox = ({ isLast, data }: VoteBoxProps) => {
                                 <>
                                     <VoteIcon className="w-9 h-auto" />
                                     <div className="flex flex-col items-start justify-center">
-                                        <p className="text-base font-semibold leading-none tracking-tight">{data.sender.name} started a vote</p>
+                                        <p className="text-base font-semibold leading-none tracking-tight">{message.sender.name} started a vote</p>
                                         <p className="text-sm text-secondary-foreground text-center mt-1">Join the session now.</p>
                                     </div>
                                 </>

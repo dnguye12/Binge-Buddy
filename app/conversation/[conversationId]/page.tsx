@@ -22,11 +22,11 @@ const ConversationIdPage = async ({ params }: ConversationIdPageProps) => {
     }
 
     return (
-        <div className="h-full lg:pl-80">
-            <div className="flex h-full min-h-screen flex-col">
+        <div className="h-screen lg:pl-80">
+            <div className="flex h-screen flex-col overflow-hidden">
                 <ConversationHeader conversation={conversation} />
-                <ConversationBody initialMessages={messages} />
-                <ConversationForm />
+                <ConversationBody initialMessages={messages} isVote={false}/>
+                <ConversationForm isVote={false}/>
             </div>
         </div>
     );

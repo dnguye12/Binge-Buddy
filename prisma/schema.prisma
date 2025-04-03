@@ -32,6 +32,12 @@ model User {
   voteSessionIds String[]      @db.ObjectId
   voteSessions   VoteSession[]
 
+  memberOfVoteSessionsIds String[]      @db.ObjectId
+  memberOfVoteSessions    VoteSession[] @relation("VoteSessionMember", fields: [voteSessionIds], references: [id])
+
+  voteSessionVotesIds String[]          @db.ObjectId
+  voteSessionVotes    VoteSessionVote[]
+
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
 }
@@ -75,6 +81,19 @@ model Message {
   createdAt DateTime @default(now())
 }
 
+model TMDBMovie {
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  overview     String
+  popularity   Float
+  poster_path  String
+  release_date DateTime
+  title        String
+  video        Boolean
+  vote_average Float
+  vote_count   Int
+  VoteSession  VoteSession[]
+}
+
 enum VoteStatus {
   INITIATED
   OPTIONS
@@ -83,17 +102,43 @@ enum VoteStatus {
   FINISHED
 }
 
+model VoteSessionVote {
+  id     String    @id @default(auto()) @map("_id") @db.ObjectId
+  round  Int
+  votes  Boolean[]
+  superD Int
+
+  senderId String @db.ObjectId
+  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  voteSessionId String      @db.ObjectId
+  voteSession   VoteSession @relation(fields: [voteSessionId], references: [id])
+}
+
 model VoteSession {
-  id             String       @id @default(auto()) @map("_id") @db.ObjectId
-  messageId      String       @unique @db.ObjectId
-  message        Message      @relation(fields: [messageId], references: [id])
+  id     String     @id @default(auto()) @map("_id") @db.ObjectId
+  status VoteStatus @default(INITIATED)
+
+  messageId String  @unique @db.ObjectId
+  message   Message @relation(fields: [messageId], references: [id])
+
   conversationId String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  senderId       String       @db.ObjectId
-  sender         User         @relation(fields: [senderId], references: [id], onDelete: Cascade)
-  status         VoteStatus   @default(INITIATED)
-  createdAt      DateTime     @default(now())
+
+  membersId String[] @db.ObjectId
+  members   User[]   @relation("VoteSessionMember", fields: [membersId], references: [id])
+
+  senderId String @db.ObjectId
+  sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 
   platforms String[]
   genres    Int[]
+
+  voteSessionVotesId String[]          @db.ObjectId
+  voteSessionVotes   VoteSessionVote[]
+
+  winnerId String?    @db.ObjectId
+  winner   TMDBMovie? @relation(fields: [winnerId], references: [id], onDelete: Cascade)
 }

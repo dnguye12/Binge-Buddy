@@ -215,7 +215,7 @@ const SetOptions = ({ conversationId, voteSessionId }: SetOptionsProp) => {
                                 >Select all</Button>
                             </div>
                         </div>
-                        <div className="flex justify-center items-center gap-6 px-12 w-full">
+                        <div className="flex justify-between items-center gap-6 px-12 w-full">
                             <div className="w-[86px]"></div>
                             <p className="uppercase font-semibold">question {stepCount} of 2</p>
                             <Button
@@ -261,7 +261,7 @@ const SetOptions = ({ conversationId, voteSessionId }: SetOptionsProp) => {
                                 className="shadow-md px-6 py-6 rounded-md cursor-pointer text-lg h-auto"
                             >Select all</Button>
                         </div>
-                        <div className="flex justify-center items-center gap-6 px-12 w-full">
+                        <div className="flex justify-between items-center gap-6 px-12 w-full">
                             <Button
                                 onClick={() => { setStep("platforms"); setStepCount(1) }}
                                 size="lg"

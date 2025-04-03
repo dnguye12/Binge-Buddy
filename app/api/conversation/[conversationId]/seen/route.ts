@@ -42,7 +42,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ con
             },
             include: {
                 sender: true,
-                seen: true
+                seen: true,
+                voteSession: true
             },
             data: {
                 seen: {

@@ -50,10 +50,10 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
 
     const updateHandler = (conversation: FullConversationType) => {
       setItems((current) => current.map((currentConversation) => {
-        if (currentConversation.id === conversation.id) {
+        if (currentConversation?.id === conversation?.id) {
           return {
             ...currentConversation,
-            messages: conversation.messages
+            messages: conversation?.messages
           }
         }
 
@@ -63,7 +63,7 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
 
     const leaveHandler = (conversation: FullConversationType) => {
       setItems((current) => {
-        return [...current.filter((convo) => convo.id !== conversation.id)]
+        return [...current.filter((convo) => convo?.id !== conversation?.id)]
       })
     }
 
@@ -91,15 +91,11 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
           <div className="py-4 text-2xl font-bold text-neutral-800">Groups</div>
           <TooltipProvider>
             <Tooltip>
-              <TooltipTrigger>
-                <Button
-                  onClick={() => onOpen("createGroup")}
-                  variant="outline"
-                  size="icon"
-                  className="cursor-pointer shadow-md"
-                >
-                  <Plus />
-                </Button>
+              <TooltipTrigger
+                onClick={() => onOpen("createGroup")}
+                className="cursor-pointer shadow-md inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9"
+              >
+                <Plus />
               </TooltipTrigger>
               <TooltipContent>
                 <p>Add a new group</p>
@@ -109,9 +105,9 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
         </div>
         {items.map((conversation) => (
           <ConversationBox
-            key={conversation.id}
+            key={conversation?.id}
             conversation={conversation}
-            selected={conversationId === conversation.id}
+            selected={conversationId === conversation?.id}
           />
         ))}
       </div>

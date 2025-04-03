@@ -6,7 +6,7 @@ const Sidebar = async ({ children }: { children: React.ReactNode }) => {
     <div className="h-full">
       <DesktopSidebar />
       <MobileFooter />
-      <main className="h-full lg:pl-20">{children}</main>
+      <main className="h-screen max-h-screen lg:pl-20">{children}</main>
     </div>
   );
 };

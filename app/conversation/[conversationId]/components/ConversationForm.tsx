@@ -18,13 +18,17 @@ import { SendHorizonal, VoteIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import MyUploadButton from "@/components/MyUploadButton";
 
+interface ConversationFormProps {
+    isVote: boolean
+}
+
 const formSchema = z.object({
     message: z.string().min(1, {
         message: "Empty message",
     }),
 });
 
-const ConversationForm = () => {
+const ConversationForm = ({ isVote }: ConversationFormProps) => {
     const { conversationId } = useConversation();
 
     const form = useForm({
@@ -62,7 +66,9 @@ const ConversationForm = () => {
 
     return (
         <div className="flex w-full items-center gap-2 border-t bg-white px-4 py-4 lg:gap-4">
-            <MyUploadButton handleUpload={handleUpload} />
+            {!isVote && (
+                <MyUploadButton handleUpload={handleUpload} />
+            )}
             <Form {...form}>
                 <form
                     onSubmit={form.handleSubmit(onSubmit)}
@@ -88,9 +94,14 @@ const ConversationForm = () => {
                             )}
                         />
                     </div>
-                    <Button onClick={handleInitVote} type="button" size="icon" variant={"outline"} disabled={isLoading} className="shadow-md cursor-pointer">
-                        <VoteIcon />
-                    </Button>
+                    {
+                        !isVote &&
+                        (
+                            <Button onClick={handleInitVote} type="button" size="icon" variant={"outline"} disabled={isLoading} className="shadow-md cursor-pointer">
+                                <VoteIcon />
+                            </Button>
+                        )
+                    }
                     <Button type="submit" size="icon" disabled={isLoading} className="shadow-md cursor-pointer">
                         <SendHorizonal />
                     </Button>
