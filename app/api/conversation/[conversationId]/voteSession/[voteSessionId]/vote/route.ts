@@ -14,7 +14,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ vot
             return new NextResponse("Unauthorized", { status: 401 });
         }
 
-        if(!round ||!votes ||!superD) {
+        if (!round && !votes && !superD) {
             return new NextResponse("Invalid Data", { status: 400 })
         }
 

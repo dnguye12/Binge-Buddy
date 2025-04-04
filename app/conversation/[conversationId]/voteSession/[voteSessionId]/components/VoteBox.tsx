@@ -19,10 +19,11 @@ interface VoteBoxProps {
     voteMovie: (arg0: number) => void,
     superD: number,
     superDislikeMovie: (arg0: number) => void,
-    submitted: boolean
+    submitted: boolean,
+    isVoter: boolean
 }
 
-const VoteBox = ({ idx, movie, myVote, voteMovie, superD, superDislikeMovie, submitted }: VoteBoxProps) => {
+const VoteBox = ({ idx, movie, myVote, voteMovie, superD, superDislikeMovie, submitted, isVoter }: VoteBoxProps) => {
     return (
         <div className="relative rounded-md flex items-end gap-x-2">
             <div
@@ -55,8 +56,8 @@ const VoteBox = ({ idx, movie, myVote, voteMovie, superD, superDislikeMovie, sub
                             variant={"destructive"}
                             size={"lg"}
                             className="h-12 flex-1 shadow-md"
-                            onClick={() => { superDislikeMovie(idx)}}
-                            disabled={submitted}
+                            onClick={() => { superDislikeMovie(idx) }}
+                            disabled={submitted || !isVoter}
                         ><CircleXIcon /> Cancel the SUPER DISLIKE
                         </Button>
                     )
@@ -68,7 +69,7 @@ const VoteBox = ({ idx, movie, myVote, voteMovie, superD, superDislikeMovie, sub
                                 size={"lg"}
                                 className="h-12 flex-1 shadow-md"
                                 onClick={() => { voteMovie(idx) }}
-                                disabled={submitted}
+                                disabled={submitted || !isVoter}
                             ><CircleXIcon /> Cancel this vote
                             </Button>
                         )
@@ -81,7 +82,7 @@ const VoteBox = ({ idx, movie, myVote, voteMovie, superD, superDislikeMovie, sub
                                     size={"lg"}
                                     className="h-12 flex-1 shadow-md"
                                     onClick={() => { superDislikeMovie(idx) }}
-                                    disabled={submitted}
+                                    disabled={submitted || !isVoter}
                                 ><ThumbsDownIcon /> Super Dislike this
                                 </Button>
                             )
@@ -91,7 +92,7 @@ const VoteBox = ({ idx, movie, myVote, voteMovie, superD, superDislikeMovie, sub
                                     size={"lg"}
                                     className="h-12 flex-1 shadow-md"
                                     onClick={() => { voteMovie(idx) }}
-                                    disabled={submitted}
+                                    disabled={submitted || !isVoter}
                                 ><ThumbsUpIcon /> Vote for this
                                 </Button>
                             )

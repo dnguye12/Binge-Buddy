@@ -18,7 +18,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ conv
             include: {
                 conversation: true,
                 sender: true,
-                members: true
+                members: {
+                    include: {
+                        user: true
+                    }
+                }
             }
         })
 

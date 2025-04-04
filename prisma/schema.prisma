@@ -32,11 +32,9 @@ model User {
   voteSessionIds String[]      @db.ObjectId
   voteSessions   VoteSession[]
 
-  memberOfVoteSessionsIds String[]      @db.ObjectId
-  memberOfVoteSessions    VoteSession[] @relation("VoteSessionMember", fields: [voteSessionIds], references: [id])
-
-  voteSessionVotesIds String[]          @db.ObjectId
+  voteSessionVotesIds String[]            @db.ObjectId
   voteSessionVotes    VoteSessionVote[]
+  voteSessionMember   VoteSessionMember[]
 
   createdAt DateTime @default(now())
   updateAt  DateTime @updatedAt
@@ -96,10 +94,24 @@ model TMDBMovie {
 
 enum VoteStatus {
   INITIATED
-  OPTIONS
+  BEFORE_VOTING
   ROUND_ONE
   ROUND_TWO
+  READY
+  BEFORE_WATCHING
+  WATCHING
   FINISHED
+}
+
+model VoteSessionMember {
+  id      String  @id @default(auto()) @map("_id") @db.ObjectId
+  isVoter Boolean @default(false)
+
+  userId String @db.ObjectId
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  voteSessionId String      @db.ObjectId
+  voteSession   VoteSession @relation(fields: [voteSessionId], references: [id], onDelete: Cascade)
 }
 
 model VoteSessionVote {
@@ -112,7 +124,7 @@ model VoteSessionVote {
   sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
   voteSessionId String      @db.ObjectId
-  voteSession   VoteSession @relation(fields: [voteSessionId], references: [id])
+  voteSession   VoteSession @relation(fields: [voteSessionId], references: [id], onDelete: Cascade)
 }
 
 model VoteSession {
@@ -125,8 +137,8 @@ model VoteSession {
   conversationId String       @db.ObjectId
   conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
 
-  membersId String[] @db.ObjectId
-  members   User[]   @relation("VoteSessionMember", fields: [membersId], references: [id])
+  membersId String[]            @db.ObjectId
+  members   VoteSessionMember[]
 
   senderId String @db.ObjectId
   sender   User   @relation(fields: [senderId], references: [id], onDelete: Cascade)
@@ -141,4 +153,6 @@ model VoteSession {
 
   winnerId String?    @db.ObjectId
   winner   TMDBMovie? @relation(fields: [winnerId], references: [id], onDelete: Cascade)
+
+  ready String[]
 }

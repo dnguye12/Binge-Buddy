@@ -7,14 +7,18 @@ import VoteBox from "./VoteBox";
 import { Button } from "@/components/ui/button";
 import { ChevronRightIcon, CircleXIcon, ThumbsDownIcon } from "lucide-react";
 import { pusherClient } from "@/lib/pusher";
+import { useUser } from "@clerk/nextjs";
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface VoteRoundProp {
     voteSession: FullVoteSessionType,
-    voteMembers: string[]
 }
 
-const VoteRound = ({ voteSession, voteMembers }: VoteRoundProp) => {
+const VoteRound = ({ voteSession }: VoteRoundProp) => {
+    const { user } = useUser()
     const round = voteSession?.status === "ROUND_ONE" ? 1 : 2
+    const isIn = (voteSession?.members ?? []).some(member => member.user.clerkId === user?.id)
+    const isVoter = isIn ? voteSession?.members.find(member => member.user.clerkId === user?.id)?.isVoter : false
 
     const [movies, setMovies] = useState<TMDBMovie[]>([])
     const [votes, setVotes] = useState<boolean[]>([])
@@ -64,7 +68,7 @@ const VoteRound = ({ voteSession, voteMembers }: VoteRoundProp) => {
                 const oldCount = voteCount
                 await setVoteCount(voteCount + 1)
 
-                if (oldCount + 1 >= voteMembers.length) {
+                if (oldCount + 1 >= voteSession?.members.filter(member => member.isVoter).length) {
                     await axios.patch(`/api/conversation/${voteSession?.conversationId}/voteSession/${voteSession?.id}/next-vote`, {
                         movies
                     })
@@ -78,7 +82,29 @@ const VoteRound = ({ voteSession, voteMembers }: VoteRoundProp) => {
                 pusherClient.unbind("voteSession_vote:new", voteHandler)
             }
         }
-    }, [voteSession, voteCount, voteMembers, movies])
+    }, [voteSession, voteCount, movies])
+
+    useEffect(() => {
+        if (voteSession) {
+            pusherClient.subscribe(voteSession.id)
+
+            const nextVote = (helper: number) => {
+                if (helper === -1) {
+                    setVotes(new Array(movies.length).fill(false))
+                    setSubmitted(false)
+                    setVoteCount(0)
+                    setSuperD(-2)
+                }
+            }
+
+            pusherClient.bind("voteSession_round_one:end", nextVote)
+
+            return () => {
+                pusherClient.unsubscribe(voteSession.id)
+                pusherClient.unbind("voteSession_round_one:end", nextVote)
+            }
+        }
+    })
 
     const voteMovie = (idx: number) => {
         setVotes((prev) => {
@@ -97,60 +123,82 @@ const VoteRound = ({ voteSession, voteMembers }: VoteRoundProp) => {
     }
 
     const handleSubmit = async () => {
+        setSubmitted(true)
         await axios.post(`/api/conversation/${voteSession?.conversationId}/voteSession/${voteSession?.id}/vote`, {
             round,
             votes,
             superD
         })
-        setSubmitted(true)
-    }
-
-    const test = async () => {
-        const res = await axios.patch(`/api/conversation/${voteSession?.conversationId}/voteSession/${voteSession?.id}/next-vote`)
-        console.log(res.data)
     }
 
     return (
         <div className="flex-1 overflow-y-auto relative w-2/3">
             <div className="flex flex-col gap-6 py-6 h-[calc(100vh-73px)]">
-                <h1 className="text-center text-2xl font-semibold">{submitted ? "You already voted, wait for others..." : "Vote!"}</h1>
-                <div className="flex-1 grid grid-cols-3 gap-y-4 gap-x-8 px-6">
-                    {
-                        movies.map((movie, idx) => (
-                            <VoteBox key={`movie-round-1-${idx}`} idx={idx} movie={movie} myVote={votes[idx]} voteMovie={voteMovie} superD={superD} superDislikeMovie={superDislikeMovie} submitted={submitted} />
-                        ))
-                    }
-                </div>
-                <div className="flex justify-between px-6">
-                    <p className="text-xl font-semibold">Round {round}/2</p>
-                    <div className="flex items-center gap-x-2">
-                        <p className="uppercase font-semibold mr-4">{voteCount}/{voteMembers.length} voted</p>
-                        <Button onClick={() => {
-                            if (superD === -2) {
-                                setSuperD(-1)
-                            } else if (superD === -1) {
-                                setSuperD(-2)
-                            }
-                        }}
-                            disabled={(superD !== -1 && superD !== -2) || submitted}
-                            variant={superD === -2 ? "destructive" : "secondary"}
-                            size={"lg"}
-                            className="shadow-md"
-                        >
-                            {
-                                superD !== -1
-                                    ? (
-                                        <><ThumbsDownIcon /> Active SUPER DISLIKE</>
-                                    )
-                                    :
-                                    (
-                                        <><CircleXIcon /> Turn off SUPER DISLIKE</>
-                                    )
-                            }</Button>
-                        <Button disabled={submitted} onClick={handleSubmit} size={"lg"} className="shadow-md">Submit vote <ChevronRightIcon /></Button>
-                        <button onClick={() => test()}>test</button>
-                    </div>
-                </div>
+                {
+                    isIn
+                        ?
+                        (
+                            <>
+                                <h1 className="text-center text-2xl font-semibold">{submitted ? "You already voted, wait for others..." : "Vote!"}</h1>
+                                <div className="flex-1 grid grid-cols-3 gap-y-4 gap-x-8 px-6">
+                                    {
+                                        movies.map((movie, idx) => (
+                                            <VoteBox key={`movie-round-1-${idx}`} idx={idx} movie={movie} myVote={votes[idx]} voteMovie={voteMovie} superD={superD} superDislikeMovie={superDislikeMovie} submitted={submitted} isVoter={isVoter}/>
+                                        ))
+                                    }
+                                </div>
+                                <div className="flex justify-between px-6">
+                                    <p className="text-xl font-semibold">Round {round}/2</p>
+                                    <div className="flex items-center gap-x-2">
+                                        <p className="uppercase font-semibold mr-4">{voteCount}/{voteSession?.members.filter(member => member.isVoter).length} voted</p>
+                                        {round === 1 && (
+                                            <Button onClick={() => {
+                                                if (superD === -2) {
+                                                    setSuperD(-1)
+                                                } else if (superD === -1) {
+                                                    setSuperD(-2)
+                                                }
+                                            }}
+                                                disabled={(superD !== -1 && superD !== -2) || submitted || !isVoter}
+                                                variant={superD === -2 ? "destructive" : "secondary"}
+                                                size={"lg"}
+                                                className="shadow-md"
+                                            >
+                                                {
+                                                    superD !== -1
+                                                        ? (
+                                                            <><ThumbsDownIcon /> Active SUPER DISLIKE</>
+                                                        )
+                                                        :
+                                                        (
+                                                            <><CircleXIcon /> Turn off SUPER DISLIKE</>
+                                                        )
+                                                }</Button>
+                                        )}
+                                        <Button disabled={submitted || !isVoter} onClick={handleSubmit} size={"lg"} className="shadow-md">Submit vote <ChevronRightIcon /></Button>
+                                    </div>
+                                </div>
+                            </>
+                        )
+                        :
+                        (
+                            <>
+                                <h1 className="text-center text-2xl font-semibold">Waiting for voting to finish.</h1>
+                                <div className="flex-1 grid grid-cols-3 gap-y-4 gap-x-8 px-6">
+                                    {
+                                        movies.map((movie, idx) => (
+                                            <Skeleton key={`movie-round-1-skeleton-${idx}`} className="w-full h-full shadow-md border" />
+                                        ))
+                                    }
+                                </div>
+                                <div className="flex justify-between px-6">
+                                    <p className="text-xl font-semibold">Round {round}/2</p>
+                                    <p className="uppercase font-semibold mr-4">{voteCount}/{voteSession?.members.filter(member => member.isVoter).length} voted</p>
+                                    <div></div>
+                                </div>
+                            </>
+                        )
+                }
             </div>
         </div>
     );

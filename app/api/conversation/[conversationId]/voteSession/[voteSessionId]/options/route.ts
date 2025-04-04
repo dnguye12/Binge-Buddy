@@ -23,7 +23,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ vo
                 id: voteSessionId
             },
             data: {
-                status: "ROUND_ONE",
+                status: "BEFORE_VOTING",
                 platforms,
                 genres
             },

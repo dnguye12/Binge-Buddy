@@ -1,4 +1,4 @@
-import { Conversation, Message, User, VoteSession, VoteSessionVote } from "@prisma/client";
+import { Conversation, Message, User, VoteSession, VoteSessionMember, VoteSessionVote } from "@prisma/client";
 
 export type FullMessageType = Message & {
   sender: User;
@@ -11,14 +11,18 @@ export type FullConversationType = Conversation & {
   messages: FullMessageType[];
 } | null;
 
+export type FullVoteSessionMemberType = VoteSessionMember & {
+  user: User
+}
+
 export type FullVoteSessionType = (VoteSession & {
   conversation: Conversation;
   sender: User;
-  members: User[];
+  members: FullVoteSessionMemberType[];
   voteSessionVotes: VoteSessionVote[]
 }) | null
 
-export type TMDBMovie = {
+export type TMDBMovie = ({
   adult: boolean;
   backdrop_path: string;
   genre_ids: number[];
@@ -33,4 +37,4 @@ export type TMDBMovie = {
   video: boolean;
   vote_average: number;
   vote_count: number;
-};
+}) | null ;

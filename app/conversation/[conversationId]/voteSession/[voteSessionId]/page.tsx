@@ -12,6 +12,11 @@ import { pusherClient } from "@/lib/pusher"
 import VoteRound from "./components/VoteRound"
 import ConversationBody from "../../components/ConversationBody"
 import ConversationForm from "../../components/ConversationForm"
+import VoteBeforeWatching from "./components/VoteBeforeWatching"
+import BeforeVoting from "./components/BeforeVoting"
+import VideoWatching from "./components/VideoWatching"
+
+
 
 const VoteSessionIdPage = () => {
     const { conversationId, voteSessionId } = useParams<{
@@ -22,7 +27,6 @@ const VoteSessionIdPage = () => {
 
     const [voteSession, setVoteSession] = useState<FullVoteSessionType>(null)
     const [conversation, setConversation] = useState<FullConversationType>(null)
-    const [voteMembers, setVoteMembers] = useState<string[]>([])
     const [loading, setLoading] = useState(true)
     const [messages, setMessages] = useState<FullMessageType[]>([])
 
@@ -35,12 +39,6 @@ const VoteSessionIdPage = () => {
                 if (data) {
                     setVoteSession(data.data)
                 } else {
-                    redirect(`/conversation/${conversationId}`)
-                }
-
-                const isIn = voteSession?.members.filter((member) => member.clerkId === user?.id)
-
-                if (voteSession?.status !== "INITIATED" && voteSession?.status !== "ROUND_ONE" && isIn?.length === 0) {
                     redirect(`/conversation/${conversationId}`)
                 }
 
@@ -57,8 +55,6 @@ const VoteSessionIdPage = () => {
                 } else {
                     redirect(`/conversation/${conversationId}`)
                 }
-
-                await axios.patch(`/api/conversation/${conversationId}/voteSession/${voteSessionId}/join-vote`)
             } catch (error) {
                 console.log(error)
                 redirect(`/conversation/${conversationId}`)
@@ -79,44 +75,49 @@ const VoteSessionIdPage = () => {
             setVoteSession(updatedVoteSession)
         }
 
-        const memberJoin = (updatedVoteSession: FullVoteSessionType) => {
-            setVoteMembers(updatedVoteSession?.members?.map((member) => (member.clerkId)) ?? [])
+        const nextVote = (updatedVoteSession: FullVoteSessionType) => {
+            setVoteSession(updatedVoteSession);
         }
 
-        const nextVote = (helper: number) => {
-            if (helper === -1) {
-                setVoteSession(prev => {
-                    if (!prev) return prev;
-                    return {
-                        ...prev,
-                        status: "ROUND_TWO"
-                    };
-                });
-            } else {
-                setVoteSession(prev => {
-                    if (!prev) return prev;
-                    return {
-                        ...prev,
-                        status: "FINISHED"
-                    };
-                });
-            }
+        const memberJoin = (updatedVoteSession: FullVoteSessionType) => {
+            setVoteSession(updatedVoteSession)
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const endVote = (winnerIdx: number) => {
+            setVoteSession(prev => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    status: "BEFORE_WATCHING"
+                }
+            })
         }
 
         pusherClient.bind("voteSession_status:update", updateStatus)
         pusherClient.bind("voteSession_join:new", memberJoin)
         pusherClient.bind("voteSession_round_one:end", nextVote)
+        pusherClient.bind("voteSession_round_two:end", endVote)
 
         return () => {
             pusherClient.unsubscribe(voteSessionId)
             pusherClient.unbind("voteSession_status:update", updateStatus)
             pusherClient.unbind("voteSession_join:new", memberJoin)
             pusherClient.unbind("voteSession_round_one:end", nextVote)
+            pusherClient.unbind("voteSession_round_two:end", endVote)
         }
     }, [voteSessionId])
 
     if (loading) {
         return <div className="h-full lg:pl-80">...Loading</div>
+    }
+
+    if (!loading && !voteSession) {
+        redirect(`/conversation/${conversationId}`)
+    }
+
+    if (!loading && voteSession?.status === "FINISHED") {
+        redirect(`/conversation/${conversationId}`)
     }
 
     return (
@@ -139,17 +140,29 @@ const VoteSessionIdPage = () => {
                         )
                     }
                     {
+                        voteSession?.status === "BEFORE_VOTING"
+                        &&
+                        <BeforeVoting voteSession={voteSession} />
+                    }
+                    {
                         (voteSession?.status === "ROUND_ONE" || voteSession?.status === "ROUND_TWO")
                         &&
                         (
-                            <VoteRound voteSession={voteSession} voteMembers={voteMembers} />
+                            <VoteRound voteSession={voteSession} />
                         )
                     }
                     {
-                        voteSession?.status === "FINISHED"
-                        && 
+                        voteSession?.status === "BEFORE_WATCHING"
+                        &&
                         (
-<></>
+                            <VoteBeforeWatching voteSession={voteSession} voteSessionId={voteSessionId} user={user} />
+                        )
+                    }
+                    {
+                        voteSession?.status === "WATCHING"
+                        &&
+                        (
+                            <VideoWatching voteSession={voteSession} voteSessionId={voteSessionId} isOwn={isOwn} />
                         )
                     }
                     <div className="w-1/3 border-l">
