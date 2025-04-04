@@ -9,7 +9,7 @@ const getMessages = async (conversationId: string) => {
       include: {
         sender: true,
         seen: true,
-        voteSession: true
+        voteSession: true,
       },
       orderBy: {
         createdAt: "asc",

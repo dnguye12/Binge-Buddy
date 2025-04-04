@@ -1,6 +1,12 @@
-"use client"
+"use client";
 
-import { ChevronLeft, EllipsisIcon, LogOut, UserPlus, Users } from "lucide-react";
+import {
+  ChevronLeft,
+  EllipsisIcon,
+  LogOut,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import Link from "next/link";
 import { useMemo } from "react";
 
@@ -13,17 +19,16 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 import { useModal } from "@/app/hooks/useModalStore";
 import { FullConversationType } from "@/app/types";
 
-
 interface ConversationHeaderProps {
-  conversation: FullConversationType
+  conversation: FullConversationType;
 }
 
 const ConversationHeader = ({ conversation }: ConversationHeaderProps) => {
-  const { onOpen } = useModal()
+  const { onOpen } = useModal();
 
   const statusText = useMemo(() => {
     return `${conversation?.users.length} members`;
@@ -32,7 +37,11 @@ const ConversationHeader = ({ conversation }: ConversationHeaderProps) => {
   return (
     <div className="flex w-full items-center justify-between border-b-[1px] bg-white px-4 py-3 shadow-sm sm:px-5 lg:px-6">
       <div className="flex items-center gap-3">
-        <Button variant="outline" size="icon" className="cursor-pointer shadow block lg:hidden">
+        <Button
+          variant="outline"
+          size="icon"
+          className="block cursor-pointer shadow lg:hidden"
+        >
           <Link href="/conversation">
             <ChevronLeft className="h-auto w-8" />
           </Link>
@@ -50,21 +59,35 @@ const ConversationHeader = ({ conversation }: ConversationHeaderProps) => {
         </div>
       </div>
 
-
       <DropdownMenu>
-        <DropdownMenuTrigger
-          className="cursor-pointer shadow-md inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9">
+        <DropdownMenuTrigger className="focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md border text-sm font-medium whitespace-nowrap shadow-md transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4">
           <EllipsisIcon />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56 text-xs font-mediumspace-y-[2px]">
-          <DropdownMenuLabel className="px-3 py-2">Conversation Options</DropdownMenuLabel>
+        <DropdownMenuContent className="font-mediumspace-y-[2px] w-56 text-xs">
+          <DropdownMenuLabel className="px-3 py-2">
+            Conversation Options
+          </DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => onOpen("invite", { conversation })} className="px-3 py-2 text-sm cursor-pointer">Invite People <UserPlus className="h-4 w-4 ml-auto" /></DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onOpen("members", { conversation })} className="px-3 py-2 text-sm cursor-pointer">Members List <Users className="w-4 h-4 ml-auto" /></DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onOpen("leaveGroup", { conversation })} className="px-3 py-2 text-sm cursor-pointer text-rose-500">Leave Chat <LogOut className="h-4 w-4 ml-auto text-rose-500" /></DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onOpen("invite", { conversation })}
+            className="cursor-pointer px-3 py-2 text-sm"
+          >
+            Invite People <UserPlus className="ml-auto h-4 w-4" />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onOpen("members", { conversation })}
+            className="cursor-pointer px-3 py-2 text-sm"
+          >
+            Members List <Users className="ml-auto h-4 w-4" />
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={() => onOpen("leaveGroup", { conversation })}
+            className="cursor-pointer px-3 py-2 text-sm text-rose-500"
+          >
+            Leave Chat <LogOut className="ml-auto h-4 w-4 text-rose-500" />
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-
     </div>
   );
 };

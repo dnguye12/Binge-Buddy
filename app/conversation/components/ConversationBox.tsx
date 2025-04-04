@@ -19,14 +19,14 @@ const ConversationBox = ({ conversation, selected }: ConversationBoxProps) => {
   const { user } = useUser();
 
   const handleClick = useCallback(() => {
-    router.push(`/conversation/${conversation.id}`);
-  }, [conversation.id, router]);
+    router.push(`/conversation/${conversation?.id}`);
+  }, [conversation?.id, router]);
 
   const lastMessage = useMemo(() => {
-    const messages = conversation.messages || [];
+    const messages = conversation?.messages || [];
 
     return messages[messages.length - 1];
-  }, [conversation.messages]);
+  }, [conversation?.messages]);
 
   const hasSeen = useMemo(() => {
     if (!lastMessage) {
@@ -42,7 +42,7 @@ const ConversationBox = ({ conversation, selected }: ConversationBoxProps) => {
 
   const lastMessageText = useMemo(() => {
     if (lastMessage?.image) {
-      return "Sent an image"
+      return "Sent an image";
     }
 
     if (lastMessage?.body) {
@@ -63,14 +63,14 @@ const ConversationBox = ({ conversation, selected }: ConversationBoxProps) => {
       <div className="relative">
         <Avatar className="h-auto w-12 border drop-shadow-md">
           <AvatarImage src="https://images.freeimages.com/images/large-previews/962/avatar-man-with-mustages-1632966.jpg?fmt=webp&h=350" />
-          <AvatarFallback>{conversation.name}</AvatarFallback>
+          <AvatarFallback>{conversation?.name}</AvatarFallback>
         </Avatar>
       </div>
       <div className="min-w-0 flex-1">
         <div className="focus:outline-none">
           <div className="mb-1 flex items-center justify-between">
             <p className="text-sm font-medium text-gray-900">
-              {conversation.name}
+              {conversation?.name}
             </p>
             {lastMessage?.createdAt && (
               <p className="text-xs font-light text-gray-400">

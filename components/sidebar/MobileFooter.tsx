@@ -22,7 +22,6 @@ const MobileFooter = () => {
           label={item.label}
           icon={item.icon}
           active={item.active}
-          onClick={item.onClick}
         />
       ))}
       <div className="group relative flex h-[56px] w-full justify-center transition-all hover:bg-gray-100">

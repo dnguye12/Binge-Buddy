@@ -1,7 +1,6 @@
 "use client";
 
 import ConversationBox from "./ConversationBox";
-import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import {
   Tooltip,
@@ -24,60 +23,63 @@ interface ConversationListProps {
 
 const ConversationList = ({ conversations }: ConversationListProps) => {
   const { onOpen } = useModal();
-  const { isLoaded, user } = useUser()
-  const [items, setItems] = useState(conversations)
+  const { isLoaded, user } = useUser();
+  const [items, setItems] = useState(conversations);
 
   const { conversationId, isOpen } = useConversation();
 
   useEffect(() => {
     if (!isLoaded || !user) {
-      return
+      return;
     }
 
-    const pusherKey = user?.id
+    const pusherKey = user?.id;
 
-    pusherClient.subscribe(pusherKey)
+    pusherClient.subscribe(pusherKey);
 
     const newHandler = (conversation: FullConversationType) => {
       setItems((current) => {
         if (find(current, { id: conversationId })) {
-          return current
+          return current;
         }
 
-        return [conversation, ...current]
-      })
-    }
+        return [conversation, ...current];
+      });
+    };
 
     const updateHandler = (conversation: FullConversationType) => {
-      setItems((current) => current.map((currentConversation) => {
-        if (currentConversation?.id === conversation?.id) {
-          return {
-            ...currentConversation,
-            messages: conversation?.messages
+      setItems((current) =>
+        current.map((currentConversation) => {
+          if (!currentConversation ||!conversation) return currentConversation;
+          if (currentConversation.id === conversation.id) {
+            return {
+              ...currentConversation,
+              messages: conversation?.messages,
+            };
           }
-        }
 
-        return currentConversation
-      }))
-    }
+          return currentConversation;
+        }),
+      );
+    };
 
     const leaveHandler = (conversation: FullConversationType) => {
       setItems((current) => {
-        return [...current.filter((convo) => convo?.id !== conversation?.id)]
-      })
-    }
+        return [...current.filter((convo) => convo?.id !== conversation?.id)];
+      });
+    };
 
-    pusherClient.bind("conversation:new", newHandler)
-    pusherClient.bind("conversation:update", updateHandler)
-    pusherClient.bind("conversation:leave", leaveHandler)
+    pusherClient.bind("conversation:new", newHandler);
+    pusherClient.bind("conversation:update", updateHandler);
+    pusherClient.bind("conversation:leave", leaveHandler);
 
     return () => {
-      pusherClient.unsubscribe(pusherKey)
-      pusherClient.unbind("conversation:new", newHandler)
-      pusherClient.unbind("conversation:update", updateHandler)
-      pusherClient.unbind("conversation:leave", leaveHandler)
-    }
-  }, [conversationId, isLoaded, user])
+      pusherClient.unsubscribe(pusherKey);
+      pusherClient.unbind("conversation:new", newHandler);
+      pusherClient.unbind("conversation:update", updateHandler);
+      pusherClient.unbind("conversation:leave", leaveHandler);
+    };
+  }, [conversationId, isLoaded, user]);
 
   return (
     <aside
@@ -93,7 +95,7 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
             <Tooltip>
               <TooltipTrigger
                 onClick={() => onOpen("createGroup")}
-                className="cursor-pointer shadow-md inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 size-9"
+                className="focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 inline-flex size-9 shrink-0 cursor-pointer items-center justify-center gap-2 rounded-md border text-sm font-medium whitespace-nowrap shadow-md transition-all outline-none focus-visible:ring-[3px] disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
               >
                 <Plus />
               </TooltipTrigger>

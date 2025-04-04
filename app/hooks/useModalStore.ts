@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { FullConversationType } from "../types";
 
-export type ModalType = "createGroup" | "invite" | "leaveGroup" | "members" | "image";
+export type ModalType =
+  | "createGroup"
+  | "invite"
+  | "leaveGroup"
+  | "members"
+  | "image";
 
 interface ModalData {
   conversation?: FullConversationType;
@@ -20,5 +25,5 @@ export const useModal = create<ModalStore>((set) => ({
   data: {},
   isOpen: false,
   onOpen: (type, data = {}) => set({ isOpen: true, type, data }),
-  onClose: () => set({ type: null, isOpen: false })
+  onClose: () => set({ type: null, isOpen: false }),
 }));
