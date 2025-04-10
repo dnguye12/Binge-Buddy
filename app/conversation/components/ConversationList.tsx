@@ -16,6 +16,7 @@ import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import { pusherClient } from "@/lib/pusher";
 import { find } from "lodash";
+import { usePathname } from "next/navigation";
 
 interface ConversationListProps {
   conversations: FullConversationType[];
@@ -27,6 +28,8 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
   const [items, setItems] = useState(conversations);
 
   const { conversationId, isOpen } = useConversation();
+
+  const path = usePathname()
 
   useEffect(() => {
     if (!isLoaded || !user) {
@@ -86,6 +89,7 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
     <aside
       className={cn(
         "fixed inset-y-0 overflow-y-auto border-r border-gray-200 pb-20 lg:left-20 lg:block lg:w-80 lg:pb-0",
+        path.includes("/voteSession/") && "!hidden",
         isOpen ? "hidden" : "left-0 block w-full",
       )}
     >

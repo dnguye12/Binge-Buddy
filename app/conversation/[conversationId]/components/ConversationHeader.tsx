@@ -22,12 +22,14 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useModal } from "@/app/hooks/useModalStore";
 import { FullConversationType } from "@/app/types";
+import { cn } from "@/lib/utils";
 
 interface ConversationHeaderProps {
-  conversation: FullConversationType;
+  conversation: FullConversationType,
+  inVote?: boolean
 }
 
-const ConversationHeader = ({ conversation }: ConversationHeaderProps) => {
+const ConversationHeader = ({ conversation, inVote = false }: ConversationHeaderProps) => {
   const { onOpen } = useModal();
 
   const statusText = useMemo(() => {
@@ -43,6 +45,16 @@ const ConversationHeader = ({ conversation }: ConversationHeaderProps) => {
           className="block cursor-pointer shadow lg:hidden"
         >
           <Link href="/conversation">
+            <ChevronLeft className="h-auto w-8" />
+          </Link>
+        </Button>
+
+        <Button
+          variant="outline"
+          size="icon"
+          className={cn("block cursor-pointer shadow ", !inVote && "hidden")}
+        >
+          <Link href={`/conversation/${conversation?.id}`} className="flex justify-center">
             <ChevronLeft className="h-auto w-8" />
           </Link>
         </Button>

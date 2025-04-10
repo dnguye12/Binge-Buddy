@@ -101,7 +101,7 @@ const BeforeVoting = ({ voteSession }: BeforeVotingProps) => {
         </div>
         <Separator />
         <p className="mt-8 text-center text-xl font-semibold">
-          {voteSession?.members?.length} members
+          {voteSession?.members?.length || 0} members
         </p>
         <div className="container mx-auto grid max-w-xl grid-cols-2 gap-6">
           {voteSession?.members?.map((member, idx) => (

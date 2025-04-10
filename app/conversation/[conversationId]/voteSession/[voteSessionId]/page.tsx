@@ -19,6 +19,9 @@ import ConversationForm from "../../components/ConversationForm";
 import VoteBeforeWatching from "./components/VoteBeforeWatching";
 import BeforeVoting from "./components/BeforeVoting";
 import VideoWatching from "./components/VideoWatching";
+import { Button } from "@/components/ui/button";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const VoteSessionIdPage = () => {
   const { conversationId, voteSessionId } = useParams<{
@@ -31,6 +34,8 @@ const VoteSessionIdPage = () => {
   const [conversation, setConversation] = useState<FullConversationType>(null);
   const [loading, setLoading] = useState(true);
   const [messages, setMessages] = useState<FullMessageType[]>([]);
+
+  const [openChat, setOpenChat] = useState(true)
 
   const isOwn = user?.id === voteSession?.sender.clerkId;
 
@@ -115,7 +120,7 @@ const VoteSessionIdPage = () => {
   }, [voteSessionId]);
 
   if (loading) {
-    return <div className="h-full lg:pl-80">...Loading</div>;
+    return <div className="h-full">...Loading</div>;
   }
 
   if (!loading && !voteSession) {
@@ -127,9 +132,9 @@ const VoteSessionIdPage = () => {
   }
 
   return (
-    <div className="h-full lg:pl-80">
+    <div className="h-full">
       <div className="flex h-screen flex-col overflow-hidden">
-        <ConversationHeader conversation={conversation} />
+        <ConversationHeader conversation={conversation} inVote={true} />
         <div className="flex">
           {voteSession?.status === "INITIATED" &&
             (isOwn ? (
@@ -145,8 +150,8 @@ const VoteSessionIdPage = () => {
           )}
           {(voteSession?.status === "ROUND_ONE" ||
             voteSession?.status === "ROUND_TWO") && (
-            <VoteRound voteSession={voteSession} />
-          )}
+              <VoteRound voteSession={voteSession} />
+            )}
           {voteSession?.status === "BEFORE_WATCHING" && (
             <VoteBeforeWatching
               voteSession={voteSession}
@@ -161,9 +166,25 @@ const VoteSessionIdPage = () => {
               isOwn={isOwn}
             />
           )}
-          <div className="w-1/3 border-l">
-            <ConversationBody initialMessages={messages} isVote={true} />
-            <ConversationForm isVote={true} />
+          <div className={cn(
+            "relative transition-all duration-300",
+            openChat ? "w-1/3 border-l" : "w-0 "
+          )}
+          >
+            <Button
+              variant={"outline"}
+              size={"icon"}
+              className="absolute top-0 -left-9 z-10 rounded-none border-r-0"
+              onClick={() => { setOpenChat(!openChat) }}
+            >
+              {
+                openChat ? <ChevronRightIcon /> : <ChevronLeftIcon />
+              }
+            </Button>
+            <div className="z-0">
+              <ConversationBody initialMessages={messages} isVote={true} />
+              <ConversationForm isVote={true} />
+            </div>
           </div>
         </div>
       </div>

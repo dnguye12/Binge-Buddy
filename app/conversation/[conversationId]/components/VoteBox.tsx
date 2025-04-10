@@ -88,7 +88,7 @@ const VoteBox = ({ isLast, message }: VoteBoxProps) => {
               </>
             )}
           </button>
-        ) : message.voteSession?.status === "BEFORE_WATCHING" ? (
+        ) : message.voteSession?.status === "BEFORE_WATCHING" || message.voteSession?.status === "WATCHING" ? (
           <button
             onClick={() => {
               handleGoToVote();

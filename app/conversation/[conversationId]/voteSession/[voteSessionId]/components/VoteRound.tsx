@@ -22,7 +22,7 @@ const VoteRound = ({ voteSession }: VoteRoundProp) => {
   );
   const isVoter = isIn
     ? voteSession?.members.find((member) => member.user.clerkId === user?.id)
-        ?.isVoter
+      ?.isVoter
     : false;
 
   const [movies, setMovies] = useState<TMDBMovie[]>([]);
@@ -40,9 +40,16 @@ const VoteRound = ({ voteSession }: VoteRoundProp) => {
   useEffect(() => {
     try {
       const fetchData = async () => {
+        let url
+        if (voteSession?.genres?.length && voteSession?.genres?.length > 0) {
+          url = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=${voteSession.genres.join("%7C")}`
+        } else {
+          url = "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc"
+        }
+        console.log(url)
         const options = {
           method: "GET",
-          url: "https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=1&sort_by=popularity.desc&with_genres=35%7C28",
+          url: url,
           headers: {
             accept: "application/json",
             Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_KEY}`,
