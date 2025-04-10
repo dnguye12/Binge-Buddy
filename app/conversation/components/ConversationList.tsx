@@ -64,8 +64,9 @@ const ConversationList = ({ conversations }: ConversationListProps) => {
     };
 
     const leaveHandler = (conversation: FullConversationType) => {
+      
       setItems((current) => {
-        return [...current.filter((convo) => convo?.id !== conversation?.id)];
+        return current.filter((convo) => convo?.id !== conversation?.id)
       });
     };
 
